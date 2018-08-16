@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">外出モード設定</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sub_title01">Wi-Fi</string>
+    <string name="togleWiFi">ToggleButton</string>
+    <string name="wifi">(WiFiのON/OFFを切り替えます)</string>
+    <string name="volume">(呼び出し音、アラーム音を消します)</string>
+</resources>
