@@ -4,5 +4,5 @@
     <string name="sub_title01">Wi-Fi</string>
     <string name="togleWiFi">ToggleButton</string>
     <string name="wifi">(WiFiのON/OFFを切り替えます)</string>
-    <string name="volume">(呼び出し音、アラーム音を消します)</string>
+    <string name="volume">(着信音をバイブレーションに、\nアラーム音も消します。\n※）解除時の動作がおかしい。)</string>
 </resources>

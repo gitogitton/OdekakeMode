@@ -216,34 +216,39 @@ public class WiFiOnOffFragment extends Fragment {
                     Log.d( CLASS_NAME, "volume off -> on" );
                     //音　復活させる！！
                     AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
-                    //アラーム音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                    audioManager.setStreamVolume( AudioManager.STREAM_ALARM,
-                            audioManager.getStreamMaxVolume( AudioManager.STREAM_ALARM ), 0 );
-                    //呼び出し音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                    audioManager.setStreamVolume( AudioManager.STREAM_RING,
-                            audioManager.getStreamMaxVolume( AudioManager.STREAM_RING ), 0 );
-                    //通知音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                    audioManager.setStreamVolume( AudioManager.STREAM_NOTIFICATION,
-                            audioManager.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION), 0 );
+                    if ( audioManager != null ) {
+                        //着信のマナーモード解除（これは本当に着信だけ）
+                        //setStreamVolume(STREAM_RING)では常に最大ボリュームになってしまう・・・ので。
+                        //→しかし、マナーモードを解除したときにっ戻るボリューム値が不安定・・・なんじゃこれ？
+                        audioManager.setRingerMode( AudioManager.RINGER_MODE_NORMAL );
+                        //アラーム音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
+                        audioManager.setStreamVolume( AudioManager.STREAM_ALARM,
+                                audioManager.getStreamMaxVolume( AudioManager.STREAM_ALARM ), 0 );
+                        //通知音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
+                        audioManager.setStreamVolume( AudioManager.STREAM_NOTIFICATION,
+                                audioManager.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION), 0 );
 
-                    //アラーム音量
-                    Log.d( CLASS_NAME, "アラーム音＝"+audioManager.getStreamVolume( AudioManager.STREAM_ALARM )+
-                            "　着信音＝" +audioManager.getStreamVolume( AudioManager.STREAM_RING )+
-                            "　通知音＝"+audioManager.getStreamVolume( AudioManager.STREAM_NOTIFICATION ) );
+                        Log.d( CLASS_NAME, "アラーム音＝"+audioManager.getStreamVolume( AudioManager.STREAM_ALARM )+
+                                "　着信音＝" +audioManager.getStreamVolume( AudioManager.STREAM_RING )+
+                                "　通知音＝"+audioManager.getStreamVolume( AudioManager.STREAM_NOTIFICATION ) );
+                    }
+                    else {
+                        Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+                    }
                 }
                 else {
                     Log.d( CLASS_NAME, "volume on -> off" );
                     //音　消す！！
                     AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
                     if ( audioManager != null ) {
+                        //着信をバイブレーションモードにする。
+                        //setStreamVolume( STREAM_RING )で音量を設定すると常に最大になってしまうので音量を消す場合もこちらに合わせる。
+                        audioManager.setRingerMode( AudioManager.RINGER_MODE_VIBRATE );
                         //アラーム音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
                         audioManager.setStreamVolume( AudioManager.STREAM_ALARM, 0, 0 );
-                        //呼び出し音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                        audioManager.setStreamVolume( AudioManager.STREAM_RING, 0, 0 );
                         //通知音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
                         audioManager.setStreamVolume( AudioManager.STREAM_NOTIFICATION, 0, 0 );
 
-                        //アラーム音量
                         Log.d( CLASS_NAME, "アラーム音＝"+audioManager.getStreamVolume( AudioManager.STREAM_ALARM )+
                                                 "　着信音＝" +audioManager.getStreamVolume( AudioManager.STREAM_RING )+
                                                 "　通知音＝"+audioManager.getStreamVolume( AudioManager.STREAM_NOTIFICATION ) );
