@@ -304,7 +304,7 @@ public class WiFiOnOffFragment extends Fragment {
                     }
                 }//if (isChecked)
                 //volume seekbar を表示
-                displayVolumeVal( audioManager, false );
+                displayVolumeVal( audioManager );
             }//onClick()
         });
 
@@ -320,9 +320,91 @@ public class WiFiOnOffFragment extends Fragment {
                                                  }//OnCheckedChangeListener()
         );//setOnCheckedChangeListener
 
+        //アラーム音量
+        SeekBar seekBarAlarm = mView.findViewById( R.id.seekBarAlarm );
+        seekBarAlarm.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Log.d( CLASS_NAME, "onProgressChanged() : progress = " + progress );
+                        AudioManager am = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+                        if ( am != null ) {
+                            am.setStreamVolume( AudioManager.STREAM_ALARM, progress, AudioManager.FLAG_SHOW_UI );
+                        }
+                        else {
+                            Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStartTrackingTouch() : " );
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStopTrackingTouch() : " );
+                    }
+                }
+        );
+        //着信音量
+        SeekBar seekBarRing = mView.findViewById( R.id.seekBarRing );
+        seekBarRing.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Log.d( CLASS_NAME, "onProgressChanged() : progress = " + progress );
+                        AudioManager am = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+                        if ( am != null ) {
+                            am.setStreamVolume( AudioManager.STREAM_RING, progress, AudioManager.FLAG_SHOW_UI );
+                        }
+                        else {
+                            Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStartTrackingTouch() : " );
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStopTrackingTouch() : " );
+                    }
+                }
+        );
+        //通知音量
+        SeekBar seekBarNotification = mView.findViewById( R.id.seekBarNotification );
+        seekBarNotification.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Log.d( CLASS_NAME, "onProgressChanged() : progress = " + progress );
+                        AudioManager am = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+                        if ( am != null ) {
+                            am.setStreamVolume( AudioManager.STREAM_NOTIFICATION, progress, AudioManager.FLAG_SHOW_UI );
+                        }
+                        else {
+                            Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStartTrackingTouch() : " );
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Log.d( CLASS_NAME, "onStopTrackingTouch() : " );
+                    }
+                }
+        );
+
     }
 
-    private void displayVolumeVal( AudioManager am, Boolean setFlag ) {
+    private void displayVolumeVal( AudioManager am ) {
         if ( am != null ) {
 //            //音量の設定値を取得
 //            int ringVol = am.getStreamVolume( AudioManager.STREAM_RING );
