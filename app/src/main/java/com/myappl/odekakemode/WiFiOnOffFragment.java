@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -112,7 +113,42 @@ public class WiFiOnOffFragment extends Fragment {
         //ボリューム設定表示
         displayVolumeInfo( view );
 
+        // ==================================================================
+        // SeekBar 表示
+        // ==================================================================
+        //seekbar 取得
+        SeekBar seekBarAlarm = mView.findViewById( R.id.seekBarAlarm );
+        SeekBar seekBarRing = mView.findViewById( R.id.seekBarRing );
+        SeekBar seekBarNotification = mView.findViewById( R.id.seekBarNotification );
+        AudioManager am = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+        if ( am != null ) {
+            //seekbarの最大値設定
+            int alarmMax = am.getStreamMaxVolume( AudioManager.STREAM_ALARM );
+            int ringMax = am.getStreamMaxVolume( AudioManager.STREAM_RING );
+            int notificationMax = am.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION );
+            seekBarAlarm.setMax( alarmMax );
+            seekBarRing.setMax( ringMax );
+            seekBarNotification.setMax( notificationMax );
+            //現在値取得
+            int alarmSetting = am.getStreamVolume( AudioManager.STREAM_ALARM );
+            int ringSetting = am.getStreamVolume( AudioManager.STREAM_RING );
+            int notificationSetting = am.getStreamVolume( AudioManager.STREAM_NOTIFICATION );
+            //SeekBar更新
+            seekBarAlarm.setProgress( alarmSetting );
+            seekBarRing.setProgress( ringSetting );
+            seekBarNotification.setProgress( notificationSetting );
+
+            Log.d( CLASS_NAME, "アラーム音："+ alarmSetting + "/" + alarmMax );
+            Log.d( CLASS_NAME, "呼び出し音："+ ringSetting + "/" + ringMax );
+            Log.d( CLASS_NAME, "通知音：" + notificationSetting + "/" + notificationMax );
+        }
+        else {
+            Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+        }
+
+        // ==================================================================
         //リスナー登録
+        // ==================================================================
         setListener( view );
 
         super.onViewCreated(view, savedInstanceState);
@@ -160,7 +196,6 @@ public class WiFiOnOffFragment extends Fragment {
         else {
             buttonVolume.setChecked( false );
         }
-
     }
 
     private void setListener( View view ) {
@@ -212,21 +247,32 @@ public class WiFiOnOffFragment extends Fragment {
                 Log.d( CLASS_NAME, "Click volume button [view="+view+"]" );
                 boolean isChecked = ((CompoundButton)view).isChecked(); //反転して後の状態が来てる！！
                 Log.d( CLASS_NAME, "isChecked() = "+ isChecked );
+                AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
                 if ( isChecked ) {
                     Log.d( CLASS_NAME, "volume off -> on" );
                     //音　復活させる！！
-                    AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+//                    AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
                     if ( audioManager != null ) {
                         //着信のマナーモード解除（これは本当に着信だけ）
                         //setStreamVolume(STREAM_RING)では常に最大ボリュームになってしまう・・・ので。
                         //→しかし、マナーモードを解除したときにっ戻るボリューム値が不安定・・・なんじゃこれ？
                         audioManager.setRingerMode( AudioManager.RINGER_MODE_NORMAL );
+
+                        int alarmMax = audioManager.getStreamMaxVolume( AudioManager.STREAM_ALARM );
+                        int ringMax = audioManager.getStreamMaxVolume( AudioManager.STREAM_RING );
+                        int notificationMax = audioManager.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION );
+
+                        int settingVal = 0;
+                        //着信音
+                        settingVal = (int)( (float)ringMax * 8/10 );
+                        Log.d( CLASS_NAME, "ring = " + settingVal );
+                        audioManager.setStreamVolume( AudioManager.STREAM_RING, settingVal, 0 );
                         //アラーム音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                        audioManager.setStreamVolume( AudioManager.STREAM_ALARM,
-                                audioManager.getStreamMaxVolume( AudioManager.STREAM_ALARM ), 0 );
+                        settingVal = alarmMax;
+                        audioManager.setStreamVolume( AudioManager.STREAM_ALARM, settingVal, 0 );
                         //通知音（第3引数はフラグ。FLAG_xxxで指定してるみたい。UIをともなったりする。）
-                        audioManager.setStreamVolume( AudioManager.STREAM_NOTIFICATION,
-                                audioManager.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION), 0 );
+                        settingVal = notificationMax / 2;
+                        audioManager.setStreamVolume( AudioManager.STREAM_NOTIFICATION, settingVal, 0 );
 
                         Log.d( CLASS_NAME, "アラーム音＝"+audioManager.getStreamVolume( AudioManager.STREAM_ALARM )+
                                 "　着信音＝" +audioManager.getStreamVolume( AudioManager.STREAM_RING )+
@@ -239,7 +285,7 @@ public class WiFiOnOffFragment extends Fragment {
                 else {
                     Log.d( CLASS_NAME, "volume on -> off" );
                     //音　消す！！
-                    AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
+//                    AudioManager audioManager = (AudioManager)getActivity().getApplicationContext().getSystemService( Context.AUDIO_SERVICE );
                     if ( audioManager != null ) {
                         //着信をバイブレーションモードにする。
                         //setStreamVolume( STREAM_RING )で音量を設定すると常に最大になってしまうので音量を消す場合もこちらに合わせる。
@@ -257,6 +303,8 @@ public class WiFiOnOffFragment extends Fragment {
                         Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
                     }
                 }//if (isChecked)
+                //volume seekbar を表示
+                displayVolumeVal( audioManager, false );
             }//onClick()
         });
 
@@ -272,6 +320,46 @@ public class WiFiOnOffFragment extends Fragment {
                                                  }//OnCheckedChangeListener()
         );//setOnCheckedChangeListener
 
+    }
+
+    private void displayVolumeVal( AudioManager am, Boolean setFlag ) {
+        if ( am != null ) {
+//            //音量の設定値を取得
+//            int ringVol = am.getStreamVolume( AudioManager.STREAM_RING );
+//            int alarmVol = am.getStreamVolume( AudioManager.STREAM_ALARM );
+//            int notificationVol = am.getStreamVolume( AudioManager.STREAM_NOTIFICATION );
+//            Log.d( CLASS_NAME, "アラーム音＝"+ alarmVol + " / 着信音＝" + ringVol + " / 通知音＝" + notificationVol );
+
+            //seekbar 取得
+            SeekBar seekBarAlarm = mView.findViewById( R.id.seekBarAlarm );
+            SeekBar seekBarRing = mView.findViewById( R.id.seekBarRing );
+            SeekBar seekBarNotification = mView.findViewById( R.id.seekBarNotification );
+
+            //各最大値を取得
+            int ringMax = am.getStreamMaxVolume( AudioManager.STREAM_RING );
+            int alarmMax = am.getStreamMaxVolume( AudioManager.STREAM_ALARM );
+            int notificationMax = am.getStreamMaxVolume( AudioManager.STREAM_NOTIFICATION );
+            Log.d( CLASS_NAME, "アラーム最大音＝"+ alarmMax + " / 着信最大音＝" + ringMax + " / 通知最大音＝" + notificationMax );
+
+            //seekbarの最大値設定
+            seekBarAlarm.setMax( alarmMax );
+            seekBarRing.setMax( ringMax );
+            seekBarNotification.setMax( notificationMax );
+
+            //各音量設定値設定
+            int alarmSet = am.getStreamVolume( AudioManager.STREAM_ALARM );   //alarm
+            int ringSet = am.getStreamVolume( AudioManager.STREAM_RING );     //着信音
+            int notificationSet = am.getStreamVolume( AudioManager.STREAM_NOTIFICATION );   //通知音;
+            Log.d( CLASS_NAME, "アラーム設定音量＝"+ alarmSet + " / 着信設定音量＝" + ringSet + " / 通知設定音量＝" + notificationSet );
+            //seekbarの現在値表示
+            seekBarAlarm.setProgress( alarmSet );
+            seekBarNotification.setProgress( notificationSet );
+            seekBarRing.setProgress( ringSet );
+
+        }
+        else {
+            Toast.makeText( getActivity().getApplicationContext(), "AudioManagerの取得に失敗！", Toast.LENGTH_LONG ).show();
+        }
     }
 
     private boolean startEcoApplication( int mode ) {

@@ -8,12 +8,10 @@
         android:id="@+id/subTitle_wifi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="45dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="43dp"
         android:text="@string/sub_title01"
         android:textSize="35sp" />
 
@@ -42,7 +40,7 @@
         android:layout_alignStart="@+id/subTitle_wifi"
         android:layout_below="@id/message_01"
         android:layout_marginTop="20dp"
-        android:text="音量"
+        android:text="@string/vol"
         android:textSize="35sp" />
 
     <ToggleButton
@@ -53,7 +51,7 @@
         android:layout_below="@id/message_01"
         android:layout_marginStart="21dp"
         android:layout_marginTop="20dp"
-        android:text="ON" />
+        android:text="@string/vol_on" />
 
     <TextView
         android:id="@+id/message_volume"
@@ -63,5 +61,53 @@
         android:layout_below="@id/titleVolume"
         android:text="@string/volume"
         android:textColor="@color/colorAccent"/>
+
+    <SeekBar
+        android:id="@+id/seekBarRing"
+        android:layout_width="233dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="221dp"
+        android:layout_toEndOf="@+id/subTitle_wifi" />
+
+    <SeekBar
+        android:id="@+id/seekBarAlarm"
+        android:layout_width="231dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="169dp"
+        android:layout_toEndOf="@+id/subTitle_wifi" />
+
+    <SeekBar
+        android:id="@+id/seekBarNotification"
+        android:layout_width="235dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="116dp"
+        android:layout_toEndOf="@+id/subTitle_wifi" />
+
+    <TextView
+        android:id="@+id/textViewRing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/subTitle_wifi"
+        android:layout_alignTop="@+id/seekBarRing"
+        android:text="@string/ring_vol" />
+
+    <TextView
+        android:id="@+id/textViewAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/subTitle_wifi"
+        android:layout_alignTop="@+id/seekBarAlarm"
+        android:text="@string/alarm_vol" />
+
+    <TextView
+        android:id="@+id/textViewNotificaton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/subTitle_wifi"
+        android:layout_alignTop="@+id/seekBarNotification"
+        android:text="@string/notification_vol" />
 
 </RelativeLayout>
