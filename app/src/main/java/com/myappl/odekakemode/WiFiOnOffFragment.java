@@ -44,6 +44,8 @@ public class WiFiOnOffFragment extends Fragment {
     private boolean mWifiStatus;
     private boolean mStatusSetFromActivity = false; //true : activity側からwifi設定する
 
+    private boolean mineoApl = false;
+
     public WiFiOnOffFragment() {
         // Required empty public constructor
     }
@@ -467,19 +469,30 @@ public class WiFiOnOffFragment extends Fragment {
 //                "jp.mineo.app.eco.EcoApplication" );
 //        startActivity( intent );
 //動いた　↓
+        boolean bRtn = true;
+
         PackageManager packageManager = getContext().getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage( "jp.mineo.app.eco" );
-        if ( null==intent.resolveActivity( packageManager ) ) {
-            Log.d( CLASS_NAME, "intent.resolveActivity() is null." );
-            return false;
+        Intent intent = packageManager.getLaunchIntentForPackage( "jp.mineo.app.mineoapp" );
+        if( intent != null ) {
+            if ( null==intent.resolveActivity( packageManager ) ) {
+                Log.d( CLASS_NAME, "intent.resolveActivity() is null." );
+                bRtn = false;
+            }
+            if ( bRtn ) {
+                if (mode == 1) {
+                    startActivityForResult(intent, PICK_CONTACT_REQUEST);
+                } else {
+                    startActivity(intent);
+                }
+                mineoApl = true;
+            } else {
+                mineoApl = false;
+            }
+        } else {
+            bRtn = false;
+            mineoApl = false;
         }
-        if ( mode == 1 ) {
-            startActivityForResult( intent, PICK_CONTACT_REQUEST );
-        }
-        else {
-            startActivity( intent );
-        }
-        return true;
+        return bRtn;
     }
 
     @Override
